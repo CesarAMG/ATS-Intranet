@@ -1,0 +1,143 @@
+<?
+    include("php/global.php");
+    include("php/conexion.php");
+    $connection = conecta("atsedu_boletaskinder");
+
+
+ /*echo 'Eliminando los alumnos viejos .......<br>';
+ $rst_delete = mysql_query ("Delete from alumnos", $connection);*/
+ echo 'Eliminado la tabla de calificaiones ......Ok<br>';
+ $rst_delete = mysql_query ("Delete from calificaciones", $connection);
+ echo 'Eliminado la tabla de Asistencia ......Ok<br>';
+ $rst_delete = mysql_query ("Delete from Asistencia", $connection);
+ echo 'Eliminado la tabla de Comentarios ......Ok<br>';
+ $rst_delete = mysql_query ("Delete from Comentarios", $connection);
+
+
+$sql_alumnos= "	select *
+ 		        from alumnos
+                where (grado like 'PK%' or grado like 'PF%' or grado like 'K' or grado like 'TDD') and activo = 1
+                order by grado, grupo";
+
+   $resultado = mysql_query ($sql_alumnos, $connection);
+
+  $encontrados = mysql_num_rows($resultado);
+
+//
+	echo 'Insertando los nuevos alumnos y reiniciando las calificaciones y asistencias ......<br>';
+       	while($row = mysql_fetch_array($resultado))
+   	{
+		$ciclo		=1;
+		$orden 		=1 ;
+	   	$grado  	= $row['grado'];
+	   	$grupo  	= $row['grupo'];
+	    $matricula  = $row['matricula'];
+	   	$nombre  	= $row['nombre'];
+
+		$se_maximo ='select max(orden) as existe  from alumnos where  grado ="'.$grado.'"  and grupo ="'.$grupo.'"';
+		$sql_max= mysql_query($se_maximo,$connection);
+		$row_max = mysql_num_rows($sql_max);
+	    if ($row_max>0)
+		{        $rst_maximo = mysql_fetch_array($sql_max);
+	        	 $orden = $rst_maximo[0]+1;
+	    }
+
+	    /********************************************************************************************************/
+	    /********** INSERTA EN LA TABLA DE ALUMNOS LOS NUEVOS ALUMNOS *******************************/
+	        /*Para esto se importa la tabla de Tb_Alumnos de la DB de Control escolar(atsedu_controlescolar)        */
+		/********************************************************************************************************/
+/*		$sql_insert = 'INSERT INTO alumnos(ciclo_id, grado, grupo, matricula, nombre, orden, activo )
+	        		values(1, "'.$grado.'","'.$grupo.'","'.$matricula.'","'.$nombre.'",'.$orden.',1);';
+	     	$execute_insert= mysql_query($sql_insert,$connection);
+		echo 'A';*/
+	       /*
+                   - Proceso que evalua el grado del alumno y lo inserta en la tabla de calificaciones
+
+               */
+
+		for ($periodo = 1; $periodo <=3; $periodo++)
+		{
+                      $sSQL = "INSERT INTO Asistencia(ciclo_id, periodo, matricula, presente, ausente, retardo) VALUES(1, '$periodo', '$matricula', '0', '0', '0')";
+		      $sth = mysql_query($sSQL, $connection);
+	  	      echo 'S';
+                      $sSQL = "INSERT INTO comentarios(ciclo_id, periodo, matricula, comentario) VALUES(1, '$periodo', '$matricula', '')";
+		      $sth = mysql_query($sSQL, $connection);
+	  	      echo 'M';
+		        switch ($grado) {
+			        case "TDD":
+			                echo '.';
+			                for ($cont = 1; $cont <=27; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL, $connection);
+                                            echo '.';
+			                 }
+			                 $cont = 1   ;
+
+			        break;
+			        case "PK1":
+			                echo '.';
+			                for ($cont = 1; $cont <=46; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL, $connection);
+                                            echo '.';
+			                 }
+			                 $cont = 1   ;
+
+			        break;
+
+			        case "PK2":
+			                for ($cont = 1; $cont <=39; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL, $connection);
+                                                 echo '.';
+			                 }
+			                 $cont = 1   ;
+
+			        break;
+
+			        case "K":
+			                for ($cont = 1; $cont <=28; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL, $connection);
+                                                 echo '.';
+			                 }
+			                 $cont = 1   ;
+
+			        break;
+			        case "PF":
+			                for ($cont = 1; $cont <=29; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL, $connection);
+                                                 echo '.';
+			                 }
+			                 $cont = 1   ;
+				break;
+		         } // end swith
+		}//end for
+                echo '<br>';
+        }
+
+
+//for ($i = 0; $i < $encontrados; $i++)
+//  {
+//  $matricula = mysql_result($resultado,$i,'matricula');
+
+/*       mysql_query("insert into comentarios (ciclo_id,periodo,matricula)
+                    values ('$cicloactivo','$periodoactivo','$matricula')",$connection);
+       mysql_query("insert into asistencia (ciclo_id,periodo,matricula)
+                    values ('$cicloactivo','$periodoactivo','$matricula')",$connection);
+       echo '<br>'.mysql_affected_rows();                                               
+
+     for ($j = 24; $j <= $materias; $j++)
+       {
+         $materia = $j;
+         mysql_query("insert into calificaciones (ciclo_id,periodo,matricula,materia)
+                    values ('$cicloactivo','$periodoactivo','$matricula','$materia') ",$connection);
+       echo ' Loop '.$i.' '.$cicloactivo.' '.$periodoactivo.' '.$matricula.' '.$materia;
+    }
+*/
+
+//  }
+
+
+?>

@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<?
+ini_set("memory_limit","20M");
+if($boton) {
+  if (is_uploaded_file($HTTP_POST_FILES['archivo']['tmp_name'])) {
+    copy($HTTP_POST_FILES['archivo']['tmp_name'], $HTTP_POST_FILES['archivo']['name']);
+    $subio = true;
+  }
+  if($subio) {
+    echo "El archivo subio con exito <br><br> Integrando registros... <br><br>";
+    set_time_limit(0);
+    require_once 'php/Excel/reader.php';// ExcelFile($filename, $encoding);
+    $data = new Spreadsheet_Excel_Reader();// Set output Encoding.
+    $data->setOutputEncoding('CP1251');
+    $data->read($HTTP_POST_FILES['archivo']['name']);
+    error_reporting(E_ALL ^ E_NOTICE);
+
+    echo "<br><br>";
+    /*include("php/global.php");
+    include("php/conexion.php");
+    $conexion = conecta();*/
+    $connection = mysql_connect ("localhost", "root", '$%$arbol51$%$') or die ("No puedo conectarme a la base de datos. ");
+$basededatos = mysql_select_db ('atsedu_boletaskinder',$connection);
+    $ciclo=1;
+    $xx=1;
+
+    for ($i = 2; $i <= $data->sheets[0]['numRows']; $i++) {
+        $grado      =$data->sheets[0]['cells'][$i][1];
+        $grupo      =$data->sheets[0]['cells'][$i][2];
+        $matricula  =$data->sheets[0]['cells'][$i][3];
+        $matricula  =$matricula+1-1;
+        $name       =$data->sheets[0]['cells'][$i][4];
+        $orden      =$data->sheets[0]['cells'][$i][5];
+        $clave      =$data->sheets[0]['cells'][$i][6];
+        $grado=strtoupper($grado);
+        $grupo=strtoupper($grupo);
+        $sql_check="select * from alumnos where matricula = '$matricula'";
+        $execute_check=mysql_query($sql_check,$connection);
+        $nrows=mysql_num_rows($execute_check);
+        if($nrows>0){
+          echo $xx.' - '.$matricula.' ya existe<br />';
+        }else{
+          $sql_insert = "INSERT INTO alumnos(ciclo_id, grado, grupo, matricula, nombre, orden, activo,clave )
+	        		                    values(1, '$grado','$grupo','$matricula','$name','$orden',1,'$clave')";
+	      $execute_insert= mysql_query($sql_insert,$connection);
+          echo $xx.' - '.$sql_insert.'<br />';
+		  echo '     A '.$name.' - ';
+
+                 //  - Proceso que evalua el grado del alumno y lo inserta en la tabla de calificaciones
+		for ($periodo = 1; $periodo <=3; $periodo++)
+		{    echo 'A';
+                      $sSQL = "INSERT INTO Asistencia(ciclo_id, periodo, matricula, presente, ausente, retardo) VALUES(1, '$periodo', '$matricula', '0', '0', '0')";
+		              $sth = mysql_query($sSQL,$connection);
+	  	     echo 'S';
+                      $sSQL = "INSERT INTO comentarios(ciclo_id, periodo, matricula, comentario) VALUES(1, '$periodo', '$matricula', '')";
+		              $sth = mysql_query($sSQL,$connection);
+	  	     echo 'M';
+		        switch ($grado) {
+			        case "TDD":
+			                echo '.';
+			                for ($cont = 1; $cont <=27; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL,$connection);
+                                            echo '.';
+			                 }
+			                 $cont = 1   ;
+
+			        break;
+			        case "PK1":
+			                echo '.';
+			                for ($cont = 1; $cont <=46; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL,$connection);
+                                            echo '.';
+			                 }
+			                 $cont = 1   ;
+
+			        break;
+
+			        case "PK2":
+			                for ($cont = 1; $cont <=39; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL,$connection);
+                                                 echo '.';
+			                 }
+			                 $cont = 1   ;
+
+			        break;
+
+			        case "K":
+			                for ($cont = 1; $cont <=28; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL,$connection);
+                                                 echo '.';
+			                 }
+			                 $cont = 1   ;
+
+			        break;
+			        case "PF":
+			                for ($cont = 1; $cont <=29; $cont++){
+			                         $sSQL = "INSERT INTO calificaciones(ciclo_id, periodo, matricula, materia) VALUES(1, '$periodo', '$matricula', '$cont')";
+			                         $sth = mysql_query($sSQL,$connection);
+                                                 echo '.';
+			                 }
+			                 $cont = 1   ;
+				break;
+		         } // end swith
+		}//end for
+                echo '<br><br />';
+
+        }
+       $xx++;
+    }
+  }
+}else{
+  echo "ya existe el archivo en la base de datos";
+}
+
+?>
+<html>
+<head>
+<title>Subir archivos</title>
+</head>
+<body>
+<h1>Subir archivos</h1>
+<br>
+<form action="<?=$PHP_SELF?>" method="post" enctype="multipart/form-data" name="form1">
+<p align="center">Archivo<input name="archivo" type="file" id="archivo"><input name="boton" type="submit" id="boton" value="Enviar"></p>
+</form
+</body>
+</html>
+

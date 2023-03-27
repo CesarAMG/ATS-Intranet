@@ -1,0 +1,211 @@
+<?
+include "_pf.php";
+function linea($num,$periodo,$tipo){
+global $t1;
+global $valores;
+global $valores1;
+global $valores2;
+    $aux="var".$num;
+    $x=$num-1;
+    switch ($periodo){
+      case 1:echo'<tr><td></td><td>'.$t1[$num].'<br /></td>
+            <td width="70" align="center" valign="middle">';
+            if ($tipo == 0){selected_pk2($valores[$x],$aux);}else{texto_poner($valores[$x],$aux);}
+            echo '</td>
+            <td width="70" align="center" valign="middle">&nbsp;</td>
+            <td width="70" align="center" valign="middle">&nbsp;</td>
+            </tr>';break;
+      case 2:echo'<tr><td></td><td>'.$t1[$num].'<br /></td>
+            <td width="70" align="center" valign="middle">'.$valores1[$num-1].'</td>
+            <td width="70" align="center" valign="middle">';
+            if ($tipo == 0){selected_pk2($valores[$x],$aux);}else{texto_poner($valores[$x],$aux);}
+            echo '</td>
+            <td width="70" align="center" valign="middle">&nbsp;</td>
+            </tr>';break;
+      case 3:echo'<tr><td></td><td>'.$t1[$num].'<br /></td>
+            <td width="70" align="center" valign="middle">'.$valores1[$num-1].'</td>
+            <td width="70" align="center" valign="middle">'.$valores2[$num-1].'</td>
+            <td width="70" align="center" valign="middle">';
+            if ($tipo == 0){selected_pk2($valores[$x],$aux);}else{texto_poner($valores[$x],$aux);}
+            //selected_pk2($valores[$x],$aux);
+            echo '</td>
+            </tr>';break;
+    }
+}
+function titulo($num){
+  global $t0;
+  echo'<tr>
+   <thead>
+        <tr id="trenc" height="30px">
+          <td colspan="2">&nbsp;&nbsp;&nbsp;'.$t0[$num].'</td>
+          <td width="35" align="center" valign="middle">1</td>
+          <td width="35" align="center" valign="middle">2</td>
+          <td width="35" align="center" valign="middle">3</td>
+        </tr>
+        </thead>  ';
+}
+
+function lineap01($renglon,$num){
+global $resultado_assist;
+global $resultado_assist1;
+global $resultado_assist2;
+global $t0;
+echo '
+        <tr><td>'.$t0[$num].'</td>
+                <td width="35" align="center" valign="middle">';echo texto_poner(mysql_result($resultado_assist,0,$renglon),$renglon);echo'</td>
+                <td width="35" align="center" valign="middle">&nbsp;</td>
+                <td width="35" align="center" valign="middle">&nbsp;</td>
+                <td width="35" align="center" valign="middle">';echo sumar3(mysql_result($resultado_assist,0,$renglon),0,0) ;echo'</td>
+        </tr>';
+}
+function lineap02($renglon,$num){
+global $resultado_assist;
+global $resultado_assist1;
+global $resultado_assist2;
+global $t0;
+echo '
+        <tr><td>'.$t0[$num].'</td>
+                <td width="35" align="center" valign="middle">';echo mysql_result($resultado_assist1,0,$renglon); echo'</td>
+                <td width="35" align="center" valign="middle">';echo texto_poner(mysql_result($resultado_assist,0,$renglon),$renglon);echo'</td>
+                <td width="35" align="center" valign="middle">&nbsp;</td>
+                <td width="35" align="center" valign="middle">';echo sumar3(mysql_result($resultado_assist1,0,$renglon), mysql_result($resultado_assist,0,$renglon),0) ;echo'</td>
+        </tr>';
+}
+function lineap03($renglon,$num){
+global $resultado_assist;
+global $resultado_assist1;
+global $resultado_assist2;
+global $t0;
+echo '
+        <tr><td>'.$t0[$num].'</td>
+                <td width="35" align="center" valign="middle">';echo mysql_result($resultado_assist1,0,$renglon); echo'</td>
+                <td width="35" align="center" valign="middle">';echo mysql_result($resultado_assist2,0,$renglon); echo'</td>
+                <td width="35" align="center" valign="middle">';echo texto_poner(mysql_result($resultado_assist,0,$renglon),$renglon);echo'</td>
+                <td width="35" align="center" valign="middle">';echo sumar3(mysql_result($resultado_assist1,0,$renglon), mysql_result($resultado_assist2,0,$renglon), mysql_result($resultado_assist,0,$renglon)) ;echo'</td>
+        </tr>';
+}
+
+function lineaC01(){
+global $resultado_coment;
+echo '<tr>
+        <td width="10%" height="174" valign="top" colspan="2">&nbsp;&nbsp;&nbsp;Observaciones 1: </td>
+        <td width="90%">';textarea_poner(mysql_result($resultado_coment,0,'comentario'),'comentario');echo '</tr>
+      <tr>
+        <td width="10%" height="174" valign="top" colspan="2">&nbsp;&nbsp;&nbsp;Observaciones 2: </td>
+        <td width="80%">&nbsp;</tr>
+      <tr>
+        <td width="10%" height="174" valign="top" colspan="2">&nbsp;&nbsp;&nbsp;Observaciones 3: </td>
+        <td width="90%">&nbsp;</tr>';
+}
+function lineaC02(){
+global $resultado_coment;
+global $resultado_coment1;
+echo '<tr>
+        <td width="10%" height="174" valign="top" colspan="2">Observaciones 1: </td>
+        <td width="90%">';echo mysql_result($resultado_coment1,0,'comentario');echo '</tr>
+      <tr>
+        <td width="10%" height="174" valign="top" colspan="2">Observaciones 2: </td>
+        <td width="90%">';textarea_poner(mysql_result($resultado_coment,0,'comentario'),'comentario');echo '</tr>
+      <tr>
+        <td width="10%" height="174" valign="top" colspan="2">Observaciones 3: </td>
+        <td width="90%">&nbsp;</tr>';
+}
+function lineaC03(){
+global $resultado_coment;
+global $resultado_coment1;
+global $resultado_coment2;
+echo '<tr>
+        <td width="10%" height="174" valign="top" colspan="2">Observaciones 1: </td>
+        <td width="90%">';echo mysql_result($resultado_coment1,0,'comentario');echo '</tr>
+      <tr>
+        <td width="10%" height="174" valign="top" colspan="2">Observaciones 2: </td>
+        <td width="90%">';echo mysql_result($resultado_coment2,0,'comentario');echo '</tr>
+      <tr>
+        <td width="10%" height="174" valign="top" colspan="2">Observaciones 3: </td>
+        <td width="90%">';textarea_poner(mysql_result($resultado_coment,0,'comentario'),'comentario');echo '</tr>';
+}
+function asistencias($periodo){
+    switch ($periodo){
+      case 1:lineap01('presente',6);lineap01('ausente',7);lineap01('retardo',8);break;
+      case 2:lineap02('presente',6);lineap02('ausente',7);lineap02('retardo',8);break;
+      case 3:lineap03('presente',6);lineap03('ausente',7);lineap03('retardo',8);break;
+    }
+}
+function comentarios($periodo){
+    switch ($periodo){
+      case 1:lineaC01();break;
+      case 2:lineaC02();break;
+      case 3:lineaC03();break;
+    }
+}
+/* comienza codigo de captura*/
+echo'
+<form id="form1" name="form1" method="post" action="grabaralumnok.php">
+   <table id="tblBorder" width="90%" align="center" cellpadding="0" cellspacing="0">
+        <tr><td valign="top" align="left" width="5"><div id="cor_lt"></div></td>
+          <td>
+  <table id="tblUser" width="100%" align="center" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr  id="trenc" height="30px">
+            <td valign="top" align="left" width="5"></td>
+            <td>'.$t0[1].'</td>
+            <td width="35" align="center" valign="middle">1</td>
+            <td width="35" align="center" valign="middle">2</td>
+            <td width="35" align="center" valign="middle">3</td>
+            <td valign="top" align="right" width="5"></td>
+        </tr></thead>';
+  for($ii=1;$ii<=7;$ii++){linea($ii,$periodoactivo,0);}
+  titulo(2);
+  for($ii=8;$ii<=11;$ii++){linea($ii,$periodoactivo,0);}
+  titulo(3);
+  for($ii=12;$ii<=14;$ii++){linea($ii,$periodoactivo,0);}
+  titulo(4);
+  for($ii=15;$ii<=19;$ii++){linea($ii,$periodoactivo,0);}
+  titulo(5);
+  for($ii=20;$ii<=21;$ii++){
+    if ($ii==27){linea($ii,$periodoactivo,1);}else{
+    linea($ii,$periodoactivo,0);}
+  }
+        echo '
+        <tr>
+            <td></td>
+            <td colspan="4"></td>
+            <td align="right"></td>
+            </tr></table>
+         </td>
+          <td valign="top" align="right" width="5"><div id="cor_rt"></div></td></tr>
+          <tr><td><div id="cor_lb"></div></td><td></td><td align="right"><div id="cor_rb"></div></td></tr></table>
+
+   <table id="tblBorder" width="90%" align="center" cellpadding="0" cellspacing="0">
+        <tr><td valign="top" align="left" width="5"><div id="cor_lt"></div></td>
+          <td>
+  <table id="tblUser" width="100%" align="center" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr  id="trenc" height="30px">
+        <td width="80%">&nbsp;&nbsp;&nbsp;<strong>ATTENDANCE / ASISTENCIA </strong></td>
+        <td width="5%" align="center" valign="middle">1</td>
+        <td width="5%" align="center" valign="middle">2</td>
+        <td width="5%" align="center" valign="middle">3</td>
+        <td width="5%" align="center" valign="middle">FINAL</td>
+      </tr></thead>';
+      asistencias($periodoactivo);echo '
+      <tr>
+            <td></td>
+            <td colspan="4"></td>
+            <td align="right"></td>
+            </tr></table>
+         </td>
+          <td valign="top" align="right" width="5"><div id="cor_rt"></div></td></tr>
+          <tr><td><div id="cor_lb"></div></td><td></td><td align="right"><div id="cor_rb"></div></td></tr></table>
+
+     <table id="tblBorder" width="90%" height="174" align="center" cellpadding="0" cellspacing="0">
+     <tr><td valign="top" align="left" width="5"><div id="cor_lt"></div></td>
+          <td ></tr>';
+     comentarios($periodoactivo);
+echo'
+    <tr>
+    <td valign="top" align="right" width="5"><div id="cor_rt"></div></td></tr>
+          <tr><td><div id="cor_lb"></div></td><td></td><td align="right"><div id="cor_rb"></div></td></tr></table>
+    <p><center><input type="submit" name="Submit" value="Grabar" /></center></p>
+</form>';
+?>
